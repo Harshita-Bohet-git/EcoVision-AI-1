@@ -23,7 +23,7 @@ import type {
   HealthStatus,
   ScanError,
   ScanInput,
-  ScanResult
+  ScanUploadResult
 } from './api.schemas';
 
 import { customFetch } from '../custom-fetch';
@@ -218,14 +218,14 @@ export const getScanMaterialUrl = () => {
 }
 
 /**
- * Accepts a multipart image upload and returns classification results. AI analysis is not yet implemented — returns a placeholder result.
- * @summary Scan a waste material image
+ * Accepts a multipart image upload, stores it temporarily on disk, and returns a success acknowledgement. AI classification will be added in a future iteration.
+ * @summary Upload a waste material image
  */
-export const scanMaterial = async (scanInput: ScanInput, options?: RequestInit): Promise<ScanResult> => {
+export const scanMaterial = async (scanInput: ScanInput, options?: RequestInit): Promise<ScanUploadResult> => {
     const formData = new FormData();
 formData.append(`image`, scanInput.image);
 
-  return customFetch<ScanResult>(getScanMaterialUrl(),
+  return customFetch<ScanUploadResult>(getScanMaterialUrl(),
   {
     ...options,
     method: 'POST'
@@ -269,7 +269,7 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
     export type ScanMaterialMutationError = ErrorType<ScanError>
 
     /**
- * @summary Scan a waste material image
+ * @summary Upload a waste material image
  */
 export const useScanMaterial = <TError = ErrorType<ScanError>,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof scanMaterial>>, TError,{data: BodyType<ScanInput>}, TContext>, request?: SecondParameter<typeof customFetch>}

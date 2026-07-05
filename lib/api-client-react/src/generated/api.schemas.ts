@@ -13,15 +13,9 @@ export interface ScanInput {
   image: Blob;
 }
 
-export interface ScanResult {
-  materialName: string;
-  category: string;
-  disposalMethod: string;
-  confidence: number;
-  recyclable: boolean;
+export interface ScanUploadResult {
+  success: boolean;
   message: string;
-  filename?: string;
-  fileSizeBytes?: number;
 }
 
 export interface ScanError {

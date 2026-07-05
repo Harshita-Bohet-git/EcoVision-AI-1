@@ -43,10 +43,11 @@ paths:
     post:
       operationId: scanMaterial
       tags: [scan]
-      summary: Scan a waste material image
+      summary: Upload a waste material image
       description: >
-        Accepts a multipart image upload and returns classification results.
-        AI analysis is not yet implemented — returns a placeholder result.
+        Accepts a multipart image upload, stores it temporarily on disk,
+        and returns a success acknowledgement. AI classification will be
+        added in a future iteration.
       requestBody:
         required: true
         content:
@@ -55,11 +56,11 @@ paths:
               $ref: "#/components/schemas/ScanInput"
       responses:
         "200":
-          description: Scan result
+          description: Image received and stored successfully
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ScanResult"
+                $ref: "#/components/schemas/ScanUploadResult"
         "400":
           description: Bad request — missing or invalid image
           content:
@@ -89,31 +90,15 @@ components:
           format: binary
       required:
         - image
-    ScanResult:
+    ScanUploadResult:
       type: object
       properties:
-        materialName:
-          type: string
-        category:
-          type: string
-        disposalMethod:
-          type: string
-        confidence:
-          type: integer
-        recyclable:
+        success:
           type: boolean
         message:
           type: string
-        filename:
-          type: string
-        fileSizeBytes:
-          type: integer
       required:
-        - materialName
-        - category
-        - disposalMethod
-        - confidence
-        - recyclable
+        - success
         - message
     ScanError:
       type: object

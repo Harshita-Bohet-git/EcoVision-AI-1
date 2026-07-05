@@ -6,7 +6,7 @@
  * OpenAPI spec version: 0.1.0
  */
 
-export * from './healthStatus';
-export * from './scanError';
-export * from './scanInput';
-export * from './scanUploadResult';
+export interface ScanUploadResult {
+  success: boolean;
+  message: string;
+}

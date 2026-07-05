@@ -27,22 +27,16 @@ export const GetHealthResponse = zod.object({
 
 
 /**
- * Accepts a multipart image upload and returns classification results. AI analysis is not yet implemented — returns a placeholder result.
- * @summary Scan a waste material image
+ * Accepts a multipart image upload, stores it temporarily on disk, and returns a success acknowledgement. AI classification will be added in a future iteration.
+ * @summary Upload a waste material image
  */
 export const ScanMaterialBody = zod.object({
   "image": zod.instanceof(File)
 })
 
 export const ScanMaterialResponse = zod.object({
-  "materialName": zod.string(),
-  "category": zod.string(),
-  "disposalMethod": zod.string(),
-  "confidence": zod.number(),
-  "recyclable": zod.boolean(),
-  "message": zod.string(),
-  "filename": zod.string().optional(),
-  "fileSizeBytes": zod.number().optional()
+  "success": zod.boolean(),
+  "message": zod.string()
 })
 
 
