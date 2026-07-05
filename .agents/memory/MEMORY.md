@@ -1,0 +1,1 @@
+- [EcoVision AI stack](ecovision-stack.md) — MERN project: React Vite at artifacts/client/, Express+Mongoose at artifacts/api-server/; env-driven CORS; MONGODB_URI read inside connectDB() not at module scope.

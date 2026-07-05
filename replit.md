@@ -1,45 +1,72 @@
-# [Project name]
+# EcoVision AI
 
-_Replace the heading above with the project's name, and this line with one sentence describing what this app does for users._
+AI-powered Waste Detection and Disposal Assistant — MERN stack project with a React Vite frontend and Express + MongoDB backend.
 
 ## Run & Operate
 
-- `pnpm --filter @workspace/api-server run dev` — run the API server (port 5000)
+- `pnpm --filter @workspace/api-server run dev` — run the API server (port configured via workflow)
+- `pnpm --filter @workspace/client run dev` — run the React frontend (port configured via workflow)
 - `pnpm run typecheck` — full typecheck across all packages
 - `pnpm run build` — typecheck + build all packages
 - `pnpm --filter @workspace/api-spec run codegen` — regenerate API hooks and Zod schemas from the OpenAPI spec
-- `pnpm --filter @workspace/db run push` — push DB schema changes (dev only)
-- Required env: `DATABASE_URL` — Postgres connection string
 
 ## Stack
 
-- pnpm workspaces, Node.js 24, TypeScript 5.9
-- API: Express 5
-- DB: PostgreSQL + Drizzle ORM
-- Validation: Zod (`zod/v4`), `drizzle-zod`
-- API codegen: Orval (from OpenAPI spec)
-- Build: esbuild (CJS bundle)
+- **Frontend**: React 19, Vite 7, TailwindCSS 4, Framer Motion, wouter (routing), TanStack React Query
+- **Backend**: Node.js 24, Express 5, Mongoose (MongoDB ODM), dotenv, pino (logging)
+- **Shared**: pnpm workspaces, TypeScript 5.9, OpenAPI-first contract (`lib/api-spec/openapi.yaml`), Orval codegen
 
-## Where things live
+## Project Structure
 
-_Populate as you build — short repo map plus pointers to the source-of-truth file for DB schema, API contracts, theme files, etc._
+```
+artifacts/
+  client/          ← React Vite frontend (EcoVision AI UI)
+  api-server/      ← Express backend (MongoDB, health routes, future AI APIs)
+lib/
+  api-spec/        ← OpenAPI spec (source of truth)
+  api-client-react/← Generated React Query hooks
+  api-zod/         ← Generated Zod validation schemas
+  db/              ← Drizzle ORM (Postgres, if used later)
+```
 
-## Architecture decisions
+## API Endpoints
 
-_Populate as you build — non-obvious choices a reader couldn't infer from the code (3-5 bullets)._
+- `GET /api/health` — returns `{ "status": "Server Running" }`
+- `GET /api/healthz` — internal health check, returns `{ "status": "ok" }`
 
-## Product
+## Environment Variables / Secrets
 
-_Describe the high-level user-facing capabilities of this app once they exist._
+| Key | Type | Required | Purpose |
+|-----|------|----------|---------|
+| `MONGODB_URI` | Secret | For DB features | MongoDB Atlas connection string |
+| `NODE_ENV` | Env var | No | `development` or `production` |
 
-## User preferences
+Add `MONGODB_URI` via Replit Secrets (not in .env). See `.env.example` for format.
 
-_Populate as you build — explicit user instructions worth remembering across sessions._
+## Architecture Decisions
+
+- OpenAPI-first: all API contracts live in `lib/api-spec/openapi.yaml` and drive codegen. Never hand-write what orval generates.
+- MongoDB connection is gracefully skipped if `MONGODB_URI` is not set (server still starts and health check works).
+- `dotenv/config` is loaded at the top of `artifacts/api-server/src/index.ts` for local `.env` support.
+- CORS is enabled globally on the Express app.
+- Pino logger used throughout the server — never `console.log`.
+
+## Adding Future APIs
+
+1. Add the endpoint to `lib/api-spec/openapi.yaml`
+2. Run `pnpm --filter @workspace/api-spec run codegen`
+3. Add the route handler in `artifacts/api-server/src/routes/`
+4. Register the router in `artifacts/api-server/src/routes/index.ts`
+5. Add Mongoose models in `artifacts/api-server/src/models/` (new folder, create as needed)
+
+## User Preferences
+
+- No authentication or AI features in this build
+- Clean folder architecture — keep client and server concerns separated
+- MongoDB preferred over Postgres for future feature work
 
 ## Gotchas
 
-_Populate as you build — sharp edges, "always run X before Y" rules._
-
-## Pointers
-
-- See the `pnpm-workspace` skill for workspace structure, TypeScript setup, and package details
+- Always run codegen after editing `openapi.yaml` before using new hooks in the frontend
+- The server skips MongoDB gracefully if `MONGODB_URI` is absent — but AI/data features will not work without it
+- Use `req.log` for logging inside Express route handlers (not `console.log`)

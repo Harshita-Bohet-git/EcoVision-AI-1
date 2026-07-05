@@ -3,19 +3,21 @@ info:
   # Do not change the title, if the title changes, the import paths will be broken
   title: Api
   version: 0.1.0
-  description: API specification
+  description: EcoVision AI API specification
 servers:
   - url: /api
     description: Base API path
 tags:
   - name: health
     description: Health operations
+  - name: scan
+    description: Waste material scanning
 paths:
   /healthz:
     get:
       operationId: healthCheck
       tags: [health]
-      summary: Health check
+      summary: Health check (internal)
       description: Returns server health status
       responses:
         "200":
@@ -24,6 +26,52 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+  /health:
+    get:
+      operationId: getHealth
+      tags: [health]
+      summary: Health check
+      description: Returns server running status
+      responses:
+        "200":
+          description: Server is running
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthStatus"
+  /scan:
+    post:
+      operationId: scanMaterial
+      tags: [scan]
+      summary: Scan a waste material image
+      description: >
+        Accepts a multipart image upload and returns classification results.
+        AI analysis is not yet implemented — returns a placeholder result.
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/ScanInput"
+      responses:
+        "200":
+          description: Scan result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ScanResult"
+        "400":
+          description: Bad request — missing or invalid image
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ScanError"
+        "500":
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ScanError"
 components:
   schemas:
     HealthStatus:
@@ -33,4 +81,44 @@ components:
           type: string
       required:
         - status
-
+    ScanInput:
+      type: object
+      properties:
+        image:
+          type: string
+          format: binary
+      required:
+        - image
+    ScanResult:
+      type: object
+      properties:
+        materialName:
+          type: string
+        category:
+          type: string
+        disposalMethod:
+          type: string
+        confidence:
+          type: integer
+        recyclable:
+          type: boolean
+        message:
+          type: string
+        filename:
+          type: string
+        fileSizeBytes:
+          type: integer
+      required:
+        - materialName
+        - category
+        - disposalMethod
+        - confidence
+        - recyclable
+        - message
+    ScanError:
+      type: object
+      properties:
+        error:
+          type: string
+      required:
+        - error
