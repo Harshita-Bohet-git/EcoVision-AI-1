@@ -1,0 +1,1 @@
+THIS WEBApp will scan your "item" classify it into whether it is recycle or non recycle , can be decomposed or not . And if it can be recycled or decomposed then it guides some easy hand option to recycle or decompose it.
